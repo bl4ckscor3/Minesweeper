@@ -11,7 +11,170 @@ import bl4ckscor3.game.minesweeper.game.TileState;
 public class Mouse implements MouseListener
 {
 	@Override
-	public void mouseClicked(MouseEvent event) {}
+	public void mouseClicked(MouseEvent event)
+	{
+		if(event.getClickCount() == 2 && event.getButton() == 1)
+		{
+			System.out.println("hi");
+			int row = (event.getX() - Game.START_X) / Game.TILE_SIZE;
+			int col = (event.getY() - Game.START_Y) / Game.TILE_SIZE;
+
+			if(row < 0 || row >= Game.BOARD_X || col < 0 || col >= Game.BOARD_Y || !tileIsNumber(row, col))
+				return;
+
+			Tile tile = Game.TILES[row][col];
+			int requiredFlags = tile.getVal();
+
+			System.out.println(requiredFlags);
+			//next 4 if statements and their containing ones check whether the tile has the exact amount of flags as are mines around it
+			//if requiredFlags < 0, then there are more flags than mines, if requiredFlags = 0 then there are as many flags as mines
+			//and if requiredFlags > 0 then there are less flags than mines around the clicked tile
+
+			if(row - 1 >= 0)
+			{
+				if(col - 1 >= 0 && Game.TILE_STATES[row - 1][col - 1] == TileState.FLAGGED)
+					requiredFlags--;
+
+				if(Game.TILE_STATES[row - 1][col] == TileState.FLAGGED)
+					requiredFlags--;
+
+				if(col + 1 < Game.TILES.length && Game.TILE_STATES[row - 1][col + 1] == TileState.FLAGGED)
+					requiredFlags--;
+			}
+
+			if(col - 1 >= 0 && Game.TILE_STATES[row][col - 1] == TileState.FLAGGED)
+				requiredFlags--;
+
+			if(col + 1 < Game.TILES.length && Game.TILE_STATES[row][col + 1] == TileState.FLAGGED)
+				requiredFlags--;
+
+			if(row + 1 < Game.TILES.length)
+			{
+				if(col - 1 >= 0 && Game.TILE_STATES[row + 1][col - 1] == TileState.FLAGGED)
+					requiredFlags--;
+
+				if(Game.TILE_STATES[row + 1][col] == TileState.FLAGGED)
+					requiredFlags--;
+
+				if(col + 1 < Game.TILES.length && Game.TILE_STATES[row + 1][col + 1] == TileState.FLAGGED)
+					requiredFlags--;
+			}
+
+			System.out.println(requiredFlags);
+
+			if(requiredFlags == 0) //unreveal all adjacent, nonflagged tiles
+			{
+				boolean mine = false;
+
+				if(row - 1 >= 0)
+				{
+					if(col - 1 >= 0 && Game.TILE_STATES[row - 1][col - 1] != TileState.FLAGGED)
+					{
+						Game.TILE_STATES[row - 1][col - 1] = TileState.REVEALED;
+
+						if(Game.TILES[row - 1][col - 1] == Tile.MINE)
+						{
+							mine = true;
+							System.out.println((row - 1) + " " + (col - 1));
+							Game.TILES[row - 1][col - 1] = Tile.HIT;
+						}
+					}
+
+					if(Game.TILE_STATES[row - 1][col] != TileState.FLAGGED)
+					{
+						Game.TILE_STATES[row - 1][col] = TileState.REVEALED;
+
+						if(Game.TILES[row - 1][col] == Tile.MINE)
+						{
+							mine = true;
+							System.out.println((row - 1) + " " + (col));
+							Game.TILES[row - 1][col] = Tile.HIT;
+						}
+					}
+
+					if(col + 1 < Game.TILES.length && Game.TILE_STATES[row - 1][col + 1] != TileState.FLAGGED)
+					{
+						Game.TILE_STATES[row - 1][col + 1] = TileState.REVEALED;
+
+						if(Game.TILES[row - 1][col + 1] == Tile.MINE)
+						{
+							mine = true;
+							System.out.println((row - 1) + " " + (col + 1));
+							Game.TILES[row - 1][col + 1] = Tile.HIT;
+						}
+					}
+				}
+
+				if(col - 1 >= 0 && Game.TILE_STATES[row][col - 1] != TileState.FLAGGED)
+				{
+					Game.TILE_STATES[row][col - 1] = TileState.REVEALED;
+
+					if(Game.TILES[row][col - 1] == Tile.MINE)
+					{
+						mine = true;
+						System.out.println((row) + " " + (col - 1));
+						Game.TILES[row][col - 1] = Tile.HIT;
+					}
+				}
+
+				if(col + 1 < Game.TILES.length && Game.TILE_STATES[row][col + 1] != TileState.FLAGGED)
+				{
+					Game.TILE_STATES[row][col + 1] = TileState.REVEALED;
+
+					if(Game.TILES[row - 1][col + 1] == Tile.MINE)
+					{
+						mine = true;
+						System.out.println((row - 1) + " " + (col + 1));
+						Game.TILES[row - 1][col + 1] = Tile.HIT;
+					}
+				}
+
+				if(row + 1 < Game.TILES.length)
+				{
+					if(col - 1 >= 0 && Game.TILE_STATES[row + 1][col - 1] != TileState.FLAGGED)
+					{
+						Game.TILE_STATES[row + 1][col - 1] = TileState.REVEALED;
+
+						if(Game.TILES[row + 1][col - 1] == Tile.MINE)
+						{
+							mine = true;
+							System.out.println((row + 1) + " " + (col - 1));
+							Game.TILES[row + 1][col - 1] = Tile.HIT;
+						}
+					}
+
+					if(Game.TILE_STATES[row + 1][col] != TileState.FLAGGED)
+					{
+						Game.TILE_STATES[row + 1][col] = TileState.REVEALED;
+
+						if(Game.TILES[row - 1][col] == Tile.MINE)
+						{
+							mine = true;
+							System.out.println((row - 1) + " " + (col));
+							Game.TILES[row - 1][col] = Tile.HIT;
+						}
+					}
+
+					if(col + 1 < Game.TILES.length && Game.TILE_STATES[row + 1][col + 1] != TileState.FLAGGED)
+					{
+						Game.TILE_STATES[row + 1][col + 1] = TileState.REVEALED;
+
+						if(Game.TILES[row + 1][col + 1] == Tile.MINE)
+						{
+							mine = true;
+							System.out.println((row - 1) + " " + (col + 1));
+							Game.TILES[row + 1][col + 1] = Tile.HIT;
+						}
+					}
+				}
+
+				if(mine)
+					Game.ended = true;
+			}
+
+			Minesweeper.game.repaint();
+		}
+	}
 
 	@Override
 	public void mouseEntered(MouseEvent event) {}
@@ -42,7 +205,7 @@ public class Mouse implements MouseListener
 			{
 				Tile tile = Game.TILES[row][col];
 
-				if(tile == Tile.MINE) //losing the game
+				if(tile == Tile.MINE) //clicking on a mine (losing the game)
 				{
 					Game.TILES[row][col] = Tile.HIT;
 
@@ -58,9 +221,9 @@ public class Mouse implements MouseListener
 					Game.ended = true;
 					Game.TILE_STATES[row][col] = TileState.REVEALED;
 				}
-				else if(tile == Tile.EMPTY)
+				else if(tile == Tile.EMPTY) //clicking on an empty tile
 					clearRecursive(row, col);
-				else
+				else //other
 					Game.TILE_STATES[row][col] = TileState.REVEALED;
 			}
 		}
@@ -71,7 +234,7 @@ public class Mouse implements MouseListener
 	}
 
 	/**
-	 * This method will clear all empty spaces and the adjacent numbers
+	 * This method will clear all empty spaces connected to the given tile at (row,col) and the adjacent numbers
 	 * @param row The row to start from
 	 * @param col The column to start from
 	 */
@@ -140,9 +303,7 @@ public class Mouse implements MouseListener
 	 */
 	private boolean tileIsNumber(int row, int col)
 	{
-		Tile tile = Game.TILES[row][col];
-
-		return tile == Tile.ONE || tile == Tile.TWO || tile == Tile.THREE || tile == Tile.FOUR ||  tile == Tile.FIVE ||  tile == Tile.SIX ||  tile == Tile.SEVEN ||  tile == Tile.EIGHT;
+		return Game.TILES[row][col].isNumber();
 	}
 
 	@Override

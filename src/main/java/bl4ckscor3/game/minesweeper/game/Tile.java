@@ -12,13 +12,40 @@ import bl4ckscor3.game.minesweeper.util.Utilities;
  */
 public enum Tile
 {
-	ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, MINE, HIT, FLAG, EMPTY, UNKNOWN;
+	ONE(1), TWO(2), THREE(3), FOUR(4), FIVE(5), SIX(6), SEVEN(7), EIGHT(8), MINE, HIT, FLAG, EMPTY, UNKNOWN;
 
 	private Image texture;
+	private int val;
 
 	private Tile()
 	{
-		texture = new ImageIcon(Utilities.getJarLocation() + "/src/main/resources/" + name().toLowerCase() + ".png").getImage();
+		this(-1);
+	}
+
+	/**
+	 * Sets up this tile
+	 * @param v The value of the tile. -1 if it doesn't have a value
+	 */
+	private Tile(int v)
+	{
+		texture = new ImageIcon(Utilities.getJarLocation() + name().toLowerCase() + ".png").getImage();
+		val = v;
+	}
+
+	/**
+	 * @return The value of this tile. -1 if it doesn't have a value
+	 */
+	public int getVal()
+	{
+		return val;
+	}
+
+	/**
+	 * @return true if this tile is a numbered tile, false otherwise
+	 */
+	public boolean isNumber()
+	{
+		return val != -1;
 	}
 
 	/**
